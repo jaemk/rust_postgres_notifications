@@ -1,0 +1,8 @@
+[package]
+name = "db"
+version = "0.1.0"
+authors = ["James Kominick <james.kominick@gmail.com>"]
+
+[dependencies]
+postgres = "0.13"
+fallible-iterator = "0.1.3"
