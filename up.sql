@@ -1,3 +1,4 @@
+-- http://yogthos.net/posts/2016-11-05-LuminusPostgresNotifications.html
 create table events
 (id serial primary key,
  event text);
@@ -5,6 +6,9 @@ create table events
 create function notify_trigger() returns trigger as $$
 declare
 begin
+    -- TG_TABLE_NAME - name of table triggered
+    -- TG_OP - name of trigger operation
+    -- NEW - new row value
     if TG_OP = 'INSERT' or TG_OP = 'UPDATE' then
         execute 'NOTIFY '
         || TG_TABLE_NAME
