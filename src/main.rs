@@ -5,8 +5,8 @@ use fallible_iterator::{FallibleIterator, IntoFallibleIterator};
 use std::env;
 use postgres::{Connection, TlsMode};
 
-/// Start up a 'listener' with `cargo run`. Then send(insert) or update
-/// rows using `cargo run send` / `cargo run update` from a separate shell.
+/// Start up a 'listener' with `cargo run`. Then send(insert), update, or delete
+/// rows using `cargo run send` / `cargo run update [id]` from a separate shell.
 pub fn main() {
     let arg  = env::args().nth(1).unwrap_or("listen".to_string());
 
@@ -19,7 +19,13 @@ pub fn main() {
             println!("id: {:?}, event: {:?}", id, event);
         }
     } else if arg == "update" {
-        conn.execute("update events set event='wow!' where id = 1", &[]).unwrap();
+        let id = env::args().nth(2).unwrap_or("1".to_string());
+        let idint = id.parse::<i32>().unwrap_or(1);
+        conn.execute("update events set event='wow!' where id = ($1)", &[&idint]).unwrap();
+    } else if arg == "delete" {
+        let id = env::args().nth(2).unwrap_or("1".to_string());
+        let idint = id.parse::<i32>().unwrap_or(1);
+        conn.execute("delete from events where id = $1", &[&idint]).unwrap();
     } else {
         println!("** Listening on 'events' and 'messages'");
         // Listen on arbitrary 'chan'. The psql trigger will communicate
